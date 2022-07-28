@@ -16,7 +16,7 @@
   },
   "scripts": {
     "test": "./src/index.js",
-    "postprepare": "yns"
+    "postinstall": "yns"
   },
   "repository": "git@github.com:shuangwhywhy/yarn-no-save.git",
   "author": "qiangyizhou <qiangyizhou@bytedance.com>",
