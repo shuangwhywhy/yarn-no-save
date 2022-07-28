@@ -7,7 +7,7 @@
     "fs-extra": "^10.1.0"
   },
   "name": "yarn-no-save",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "add --no-save option to yarn cli",
   "main": "./src/index.js",
   "bin": {
@@ -15,7 +15,8 @@
     "yns": "./src/index.js"
   },
   "scripts": {
-    "test": "./src/index.js"
+    "test": "./src/index.js",
+    "postprepare": "yns"
   },
   "repository": "git@github.com:shuangwhywhy/yarn-no-save.git",
   "author": "qiangyizhou <qiangyizhou@bytedance.com>",
