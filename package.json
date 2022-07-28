@@ -2,5 +2,12 @@
   "dependencies": {
     "@babel/generator": "^7.18.9",
     "@babel/parser": "^7.18.9"
-  }
+  },
+  "name": "yarn-no-save",
+  "version": "1.0.0",
+  "description": "add --no-save option to yarn cli",
+  "main": "index.js",
+  "repository": "git@github.com:shuangwhywhy/yarn-no-save.git",
+  "author": "qiangyizhou <qiangyizhou@bytedance.com>",
+  "license": "MIT"
 }
