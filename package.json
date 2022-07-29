@@ -3,8 +3,7 @@
     "@babel/generator": "^7.18.9",
     "@babel/parser": "^7.18.9",
     "@babel/traverse": "^7.18.9",
-    "@babel/types": "^7.18.9",
-    "fs-extra": "^10.1.0"
+    "@babel/types": "^7.18.9"
   },
   "name": "yarn-no-save",
   "version": "1.0.7",
