@@ -27,27 +27,47 @@ function exec (cmd, ...args) {
 	return stdout.toString().replace(/\n+$/, '');
 }
 
+function _isSavingManifest(nodePath) {
+	return nodePath.isAssignmentExpression() &&
+		nodePath.get('left')?.isMemberExpression() &&
+		nodePath.get('left')?.get('property')?.isIdentifier({ name: 'saveRootManifests' }) &&
+		nodePath.get('right')?.isCallExpression() &&
+		nodePath.get('right')?.get('callee')?.isFunctionExpression()
+}
+
+function _isNoSaveLogic(nodePath) {
+	return nodePath.isIfStatement() &&
+		nodePath.get('test')?.isLogicalExpression({ operator: '||' }) &&
+		nodePath.get('test')?.get('left')?.get('arguments')[0]?.isStringLiteral({ value: '--no-save' }) &&
+		nodePath.get('test')?.get('right')?.get('arguments')[0]?.isStringLiteral({ value: '-N' })
+}
+
+function _isAddHelpMsg(nodePath) {
+	return nodePath.isExpressionStatement() &&
+		nodePath.get('expression')?.isCallExpression() &&
+		nodePath.get('expression')?.get('callee')?.isMemberExpression() &&
+		nodePath.get('expression')?.get('callee')?.get('object')?.isIdentifier({ name: 'commander' }) &&
+		nodePath.get('expression')?.get('arguments')[0]?.isStringLiteral({ value: 'add [packages ...] [flags]' })
+}
+
+function _isNoSaveHelpMsg(nodePath) {
+	return nodePath.isExpressionStatement() &&
+		nodePath.get('expression')?.isCallExpression() &&
+		nodePath.get('expression')?.get('callee')?.isMemberExpression() &&
+		nodePath.get('expression')?.get('callee')?.get('object')?.isIdentifier({ name: 'commander' }) &&
+		nodePath.get('expression')?.get('arguments')[0]?.isStringLiteral({ value: '-N, --no-save' })
+}
+
 function reset() {
 	const whereIsYarn = exec('readlink', '-f', '`which yarn`');
 	const file = path.resolve(whereIsYarn, '../../lib/cli.js');
 	const ast = parse(fs.readFileSync(file).toString());
 	traverse(ast, {
 		enter(p) {
-			if (
-				p.isIfStatement() &&
-				p.get('test')?.isLogicalExpression({ operator: '||' }) &&
-				p.get('test')?.get('left')?.get('arguments')[0]?.isStringLiteral({ value: '--no-save' }) &&
-				p.get('test')?.get('right')?.get('arguments')[0]?.isStringLiteral({ value: '-N' })
-			) {
+			if (_isNoSaveLogic(p)) {
 				p.remove();
 			}
-			else if (
-				p.isExpressionStatement() &&
-				p.get('expression')?.isCallExpression() &&
-				p.get('expression')?.get('callee')?.isMemberExpression() &&
-				p.get('expression')?.get('callee')?.get('object')?.isIdentifier({ name: 'commander' }) &&
-				p.get('expression')?.get('callee')?.get('arguments')[0]?.isStringLiteral({ value: '-N, --no-save' })
-			) {
+			else if (_isNoSaveHelpMsg(p)) {
 				p.remove();
 			}
 		}
@@ -64,21 +84,10 @@ function makeJs() {
 	const ast = parse(fs.readFileSync(file).toString());
 	traverse(ast, {
 		enter(p) {
-			if (
-				p.isAssignmentExpression() &&
-				p.get('left')?.isMemberExpression() &&
-				p.get('left')?.get('property')?.isIdentifier({ name: 'saveRootManifests' }) &&
-				p.get('right')?.isCallExpression() &&
-				p.get('right')?.get('callee')?.isFunctionExpression()
-			) {
+			if (_isSavingManifest(p)) {
 				const body = p.get('right').get('callee').get('body');
 				const first = body.get('body')[0];
-				if (
-					first.isIfStatement() &&
-					first.get('test')?.isLogicalExpression({ operator: '||' }) &&
-					first.get('test')?.get('left')?.get('arguments')[0]?.isStringLiteral({ value: '--no-save' }) &&
-					first.get('test')?.get('right')?.get('arguments')[0]?.isStringLiteral({ value: '-N' })
-				) {
+				if (_isNoSaveLogic(first)) {
 					return;
 				}
 				body.unshiftContainer('body',
@@ -110,21 +119,9 @@ function makeJs() {
 					)
 				);
 			}
-			else if (
-				p.isExpressionStatement() &&
-				p.get('expression')?.isCallExpression() &&
-				p.get('expression')?.get('callee')?.isMemberExpression() &&
-				p.get('expression')?.get('callee')?.get('object')?.isIdentifier({ name: 'commander' }) &&
-				p.get('expression')?.get('callee')?.get('arguments')[0]?.isStringLiteral({ value: 'add [packages ...] [flags]' })
-			) {
+			else if (_isAddHelpMsg(p)) {
 				const next = p.getNextSibling();
-				if (
-					next.isExpressionStatement() &&
-					next.get('expression')?.isCallExpression() &&
-					next.get('expression')?.get('callee')?.isMemberExpression() &&
-					next.get('expression')?.get('callee')?.get('object')?.isIdentifier({ name: 'commander' }) &&
-					next.get('expression')?.get('callee')?.get('arguments')[0]?.isStringLiteral({ value: '-N, --no-save' })
-				) {
+				if (_isNoSaveHelpMsg(next)) {
 					return;
 				}
 				p.insertAfter([
