@@ -7,7 +7,7 @@ const { userInfo } = require('os');
 const { parse } = require('@babel/parser');
 const traverse = require('@babel/traverse').default;
 const generate = require('@babel/generator').default;
-const { ifStatement, callExpression, memberExpression, stringLiteral, identifier, blockStatement, returnStatement, logicalExpression, expressionStatement } = require('@babel/types');
+const { ifStatement, callExpression, memberExpression, stringLiteral, identifier, blockStatement, returnStatement, logicalExpression, expressionStatement, functionExpression } = require('@babel/types');
 
 const { uid, gid } = userInfo();
 const cwd = process.cwd();
@@ -39,8 +39,7 @@ function _isSavingManifest(nodePath) {
 function _isNoSaveLogic(nodePath) {
 	return nodePath.isIfStatement() &&
 		nodePath.get('test')?.isLogicalExpression({ operator: '||' }) &&
-		nodePath.get('test')?.get('left')?.get('arguments')[0]?.isStringLiteral({ value: '--no-save' }) &&
-		nodePath.get('test')?.get('right')?.get('arguments')[0]?.isStringLiteral({ value: '-N' })
+		nodePath.get('test')?.get('left')?.get('arguments')[0]?.isStringLiteral({ value: '--no-save' })
 }
 
 function _isAddHelpMsg(nodePath) {
@@ -85,11 +84,12 @@ function makeJs() {
 		enter(p) {
 			if (_isSavingManifest(p)) {
 				const body = p.get('right').get('callee').get('body');
-				const first = body.get('body')[0];
-				if (_isNoSaveLogic(first)) {
+				const statements = body.get('body');
+				const beforeReturn = statements[statements.length - 2];
+				if (beforeReturn && _isNoSaveLogic(beforeReturn)) {
 					return;
 				}
-				body.unshiftContainer('body',
+				beforeReturn.insertAfter(
 					ifStatement(
 						logicalExpression(
 							'||',
@@ -114,7 +114,13 @@ function makeJs() {
 								[stringLiteral('-N')]
 							)
 						),
-						blockStatement([returnStatement()])
+						blockStatement([
+							returnStatement(
+								functionExpression(
+									undefined, [], blockStatement([])
+								)
+							)
+						])
 					)
 				);
 			}
