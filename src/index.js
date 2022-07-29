@@ -11,6 +11,7 @@ const { ifStatement, callExpression, memberExpression, stringLiteral, identifier
 
 const { uid, gid } = userInfo();
 const cwd = process.cwd();
+const whereIsYarn = exec('readlink', '-f', '`which yarn`');
 
 function exec (cmd, ...args) {
 	const PATH = process?.env?.PATH?.split(':')?.filter(p => !/^\/var\/folders\//.test(p))?.join(':');
@@ -59,7 +60,6 @@ function _isNoSaveHelpMsg(nodePath) {
 }
 
 function reset() {
-	const whereIsYarn = exec('readlink', '-f', '`which yarn`');
 	const file = path.resolve(whereIsYarn, '../../lib/cli.js');
 	const ast = parse(fs.readFileSync(file).toString());
 	traverse(ast, {
@@ -79,7 +79,6 @@ function reset() {
 }
 
 function makeJs() {
-	const whereIsYarn = exec('readlink', '-f', '`which yarn`');
 	const file = path.resolve(whereIsYarn, '../../lib/cli.js');
 	const ast = parse(fs.readFileSync(file).toString());
 	traverse(ast, {
