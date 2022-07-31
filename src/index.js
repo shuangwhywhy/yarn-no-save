@@ -31,50 +31,42 @@ function exec (cmd, ...args) {
 function _isSavingManifest(nodePath) {
 	return nodePath.isAssignmentExpression() &&
 		nodePath.get('left')?.isMemberExpression() &&
-		nodePath.get('left')?.get('property')?.isIdentifier({ name: 'saveRootManifests' }) &&
+		nodePath.get('left').get('property')?.isIdentifier({ name: 'saveRootManifests' }) &&
 		nodePath.get('right')?.isCallExpression() &&
-		nodePath.get('right')?.get('callee')?.isFunctionExpression()
+		nodePath.get('right').get('callee')?.isFunctionExpression()
 }
 
 function _isNoSaveLogic(nodePath) {
 	return nodePath.isIfStatement() &&
 		nodePath.get('test')?.isLogicalExpression({ operator: '||' }) &&
-		nodePath.get('test')?.get('left')?.get('arguments')[0]?.isStringLiteral({ value: '--no-save' })
+		nodePath.get('test').get('left')?.get('arguments')[0]?.isStringLiteral({ value: '--no-save' })
 }
 
 function _isAddHelpMsg(nodePath) {
 	return nodePath.isExpressionStatement() &&
 		nodePath.get('expression')?.isCallExpression() &&
-		nodePath.get('expression')?.get('callee')?.isMemberExpression() &&
-		nodePath.get('expression')?.get('callee')?.get('object')?.isIdentifier({ name: 'commander' }) &&
-		nodePath.get('expression')?.get('arguments')[0]?.isStringLiteral({ value: 'add [packages ...] [flags]' })
+		nodePath.get('expression').get('callee')?.isMemberExpression() &&
+		nodePath.get('expression').get('callee').get('object')?.isIdentifier({ name: 'commander' }) &&
+		nodePath.get('expression').get('arguments')[0]?.isStringLiteral({ value: 'add [packages ...] [flags]' })
 }
 
 function _isNoSaveHelpMsg(nodePath) {
 	return nodePath.isExpressionStatement() &&
 		nodePath.get('expression')?.isCallExpression() &&
-		nodePath.get('expression')?.get('callee')?.isMemberExpression() &&
-		nodePath.get('expression')?.get('callee')?.get('object')?.isIdentifier({ name: 'commander' }) &&
-		nodePath.get('expression')?.get('arguments')[0]?.isStringLiteral({ value: '-N, --no-save' })
+		nodePath.get('expression').get('callee')?.isMemberExpression() &&
+		nodePath.get('expression').get('callee').get('object')?.isIdentifier({ name: 'commander' }) &&
+		nodePath.get('expression').get('arguments')[0]?.isStringLiteral({ value: '-N, --no-save' })
+}
+
+function _isRemoveThrowError(nodePath) {
+	return nodePath.isThrowStatement() &&
+		nodePath.get('argument').isNewExpression() &&
+		nodePath.get('argument').get('arguments')[0]?.isCallExpression() &&
+		nodePath.get('argument').get('arguments')[0].get('arguments')[0]?.isStringLiteral({ value: 'moduleNotInManifest' });
 }
 
 function reset() {
-	const file = path.resolve(whereIsYarn, '../../lib/cli.js');
-	const ast = parse(fs.readFileSync(file).toString());
-	traverse(ast, {
-		enter(p) {
-			if (_isNoSaveLogic(p)) {
-				p.remove();
-			}
-			else if (_isNoSaveHelpMsg(p)) {
-				p.remove();
-			}
-		}
-	});
-	const code = generate(ast, {
-		quotes: 'single'
-	}).code;
-	fs.writeFileSync(file, code);
+	exec('npm', 'i', '-g', 'yarn');
 }
 
 function makeJs() {
@@ -123,6 +115,25 @@ function makeJs() {
 						])
 					)
 				);
+			}
+			else if (_isRemoveThrowError(p)) {
+				const prev = p.getPrevSibling();
+				if (prev.node) {
+					prev.addComment('trailing', 'ori-throw-error', false);
+				}
+				else {
+					const next = p.getNextSibling();
+					if (next.node) {
+						next.addComment('leading', 'ori-throw-error', false);
+					}
+					else {
+						const parent = p.parentPath;
+						if (parent.isBlockStatement()) {
+							parent.addComment('inner', 'ori-throw-error', false);
+						}
+					}
+				}
+				p.remove();
 			}
 			else if (_isAddHelpMsg(p)) {
 				const next = p.getNextSibling();
