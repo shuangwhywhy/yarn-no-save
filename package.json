@@ -6,8 +6,14 @@
     "@babel/types": "^7.18.9"
   },
   "name": "yarn-no-save",
-  "version": "1.0.10",
-  "description": "add --no-save option to yarn cli",
+  "version": "1.0.11",
+  "description": "Enabling --no-save/-N option to Yarn cli commands",
+  "keywords": [
+    "yarn",
+    "no-save",
+    "nosave",
+    "npm"
+  ],
   "main": "./src/index.js",
   "bin": {
     "yarn-no-save": "./src/index.js",
