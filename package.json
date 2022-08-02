@@ -7,7 +7,7 @@
     "single-instance": "^0.0.1"
   },
   "name": "yarn-no-save",
-  "version": "1.0.15",
+  "version": "1.0.16",
   "description": "Enabling --no-save/-N option to Yarn cli commands",
   "keywords": [
     "yarn",
@@ -24,9 +24,9 @@
   ],
   "main": "./src/index.js",
   "bin": {
-    "yarn-no-save": "./src/index.js",
-    "yns": "./src/index.js",
-    "yarn-watcher": "./src/watch.js"
+    "yarn-no-save": "./dist/index.js",
+    "yns": "./dist/index.js",
+    "yarn-watcher": "./dist/watch.js"
   },
   "scripts": {
     "build": "node ./build.js",
