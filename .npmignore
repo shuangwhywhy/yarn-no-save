@@ -4,3 +4,5 @@ node_modules
 yarn-error.log
 .eslintignore
 publish.js
+src/
+build.js
