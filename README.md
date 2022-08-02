@@ -1,6 +1,6 @@
 # yarn-no-save
 
-Enabling `--no-save` / `-N` option to **Yarn** cli commands.
+Enabling `--no-save` / `-N` option to **Yarn** cli commands. The option prevents saving to package.json when you do `yarn add` stuff.
 
 # How to Use
 
