@@ -7,7 +7,8 @@
     "single-instance": "^0.0.1"
   },
   "name": "yarn-no-save",
-  "version": "1.0.28",
+  "sideEffects": false,
+  "version": "1.0.29",
   "description": "Enabling --no-save/-N option to Yarn cli commands",
   "keywords": [
     "yarn",
