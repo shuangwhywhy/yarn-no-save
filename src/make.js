@@ -1,11 +1,11 @@
-const { spawnSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const { userInfo } = require('os');
-const { parse } = require('@babel/parser');
-const traverse = require('@babel/traverse').default;
-const generate = require('@babel/generator').default;
-const { ifStatement, callExpression, memberExpression, stringLiteral, identifier, blockStatement, returnStatement, logicalExpression, expressionStatement, functionExpression } = require('@babel/types');
+import { spawnSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import { userInfo } from 'os';
+import { parse } from '@babel/parser';
+import traverse from '@babel/traverse';
+import generate from '@babel/generator';
+import { ifStatement, callExpression, memberExpression, stringLiteral, identifier, blockStatement, returnStatement, logicalExpression, expressionStatement, functionExpression } from '@babel/types';
 
 const { uid, gid } = userInfo();
 const cwd = process.cwd();
@@ -63,11 +63,11 @@ function _isRemoveThrowError(nodePath) {
 		nodePath.get('argument').get('arguments')[0].get('arguments')[0]?.isStringLiteral({ value: 'moduleNotInManifest' });
 }
 
-module.exports.reset = function reset() {
+export function reset() {
 	exec('npm', 'i', '-g', 'yarn');
 }
 
-module.exports.makeJs = function makeJs() {
+export function makeJs() {
 	const file = path.resolve(whereIsYarn, '../../lib/cli.js');
 	const ast = parse(fs.readFileSync(file).toString());
 	traverse(ast, {

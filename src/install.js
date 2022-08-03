@@ -1,8 +1,9 @@
 #!/usr/bin/env node
 
-const fs = require('fs');
-const path = require('path');
-const { homedir } = require('os');
+import fs from 'fs';
+import path from 'path';
+import { homedir } from 'os';
+
 const home = homedir();
 const launchdPath = path.resolve(home, 'Library/LaunchAgents/yarn-watcher.plist');
 
@@ -10,19 +11,19 @@ if (fs.existsSync(launchdPath)) {
 	fs.removeSync(launchdPath);
 }
 
-fs.writeFileSync(launchdPath, `<plist version="1.0">\
-	<dict>\
-		<key>Label</key>\
-		<string>yarn-watcher</string>\
-		<key>ProgramArguments</key>\
-		<array>\
-			<string>yarn-watcher</string>\
-		</array>\
-		<key>RunAtLoad</key>\
-		<true/>\
-		<key>StandardErrorPath</key>\
-		<string>/dev/null</string>\
-		<key>StandardOutPath</key>\
-		<string>/dev/null</string>\
-	</dict>\
+fs.writeFileSync(launchdPath, `<plist version="1.0">\n
+	<dict>\n
+		<key>Label</key>\n
+		<string>yarn-watcher</string>\n
+		<key>ProgramArguments</key>\n
+		<array>\n
+			<string>yarn-watcher</string>\n
+		</array>\n
+		<key>RunAtLoad</key>\n
+		<true/>\n
+		<key>StandardErrorPath</key>\n
+		<string>/dev/null</string>\n
+		<key>StandardOutPath</key>\n
+		<string>/dev/null</string>\n
+	</dict>\n
 </plist>`);

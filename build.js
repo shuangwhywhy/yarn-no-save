@@ -7,6 +7,7 @@ fs.removeSync(path.resolve(__dirname, 'dist'));
 
 webpack({
 	mode: 'development',
+	target: 'node',
 	entry: {
 		index: './src/index.js',
 		install: './src/install.js',
@@ -20,6 +21,7 @@ webpack({
 		rules: [
 			{
 				test: /\.js/,
+				exclude: /node_modules/,
 				use: [
 					{
 						loader: 'babel-loader',
@@ -31,7 +33,8 @@ webpack({
 			}
 		]
 	},
-	plugins: [new ShebangPlugin()]
+	plugins: [new ShebangPlugin()],
+	
 }, (e) => {
-	console.dir(e, {depth: 1})
+	e && console.log(e.toString());
 });

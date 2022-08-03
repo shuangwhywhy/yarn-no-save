@@ -1,15 +1,16 @@
 #!/usr/bin/env node
 
-const { spawnSync } = require('child_process');
-const fs = require('fs');
-const path = require('path');
-const Single = require('single-instance');
-const { userInfo } = require('os');
+import { spawnSync } from 'child_process';
+import fs from 'fs';
+import path from 'path';
+import Single from 'single-instance';
+import { userInfo } from 'os';
+import { makeJs } from './make.js';
+
 const { uid, gid } = userInfo();
 const cwd = process.cwd();
 const whereIsYarn = exec('readlink', '-f', '`which yarn`');
 const yarnCliFile = path.resolve(whereIsYarn, '../../lib/cli.js');
-const { makeJs } = require('./make.js');
 
 function exec (cmd, ...args) {
 	const PATH = process.env?.PATH?.split(':')?.filter(p => !/^\/var\/folders\//.test(p))?.join(':');
