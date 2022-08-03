@@ -6,7 +6,7 @@ const fs = require('fs-extra');
 fs.removeSync(path.resolve(__dirname, 'dist'));
 
 webpack({
-	mode: 'development',
+	mode: 'production',
 	target: 'node',
 	entry: {
 		index: './src/index.js',
