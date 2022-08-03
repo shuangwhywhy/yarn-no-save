@@ -11,7 +11,7 @@ const { uid, gid } = userInfo();
 const cwd = process.cwd();
 const whereIsYarn = exec('readlink', '-f', '`which yarn`');
 
-function exec (cmd, ...args) {
+export function exec (cmd, ...args) {
 	const PATH = process.env?.PATH?.split(':')?.filter(p => !/^\/var\/folders\//.test(p))?.join(':');
 	const { stdout, stderr } = spawnSync(cmd, args, {	// ignore_security_alert
 		cwd, uid, gid, shell: process.env.SHELL, env: {
