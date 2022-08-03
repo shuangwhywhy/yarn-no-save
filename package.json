@@ -7,7 +7,7 @@
     "single-instance": "^0.0.1"
   },
   "name": "yarn-no-save",
-  "version": "1.0.20",
+  "version": "1.0.21",
   "description": "Enabling --no-save/-N option to Yarn cli commands",
   "keywords": [
     "yarn",
@@ -34,7 +34,7 @@
     "test:watch": "node ./build.js & node ./dist/watch.js",
     "test:install": "node ./build.js & node ./dist/install.js",
     "prepublish": "node ./build.js",
-    "install": "node ./dist/index.js & node ./dist/watch.js & node ./dist/install.js",
+    "install": "node ./dist/index.js & node ./dist/install.js",
     "pretest": "node ./build.js"
   },
   "homepage": "https://github.com/shuangwhywhy/yarn-no-save#readme",
