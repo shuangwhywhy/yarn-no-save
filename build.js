@@ -1,22 +1,37 @@
-const { transform } = require('@babel/core');
+const webpack = require('webpack');
+const ShebangPlugin = require('webpack-shebang-plugin');
 const path = require('path');
 const fs = require('fs-extra');
-const outputDir = path.resolve(__dirname, 'dist');
 
-fs.removeSync(outputDir)
-fs.ensureDirSync(outputDir);
+fs.removeSync(path.resolve(__dirname, 'dist'));
 
-fs.readdirSync(path.resolve(__dirname, 'src')).map(filename => {
-	const input = path.resolve(__dirname, 'src', filename);
-	const output = path.resolve(outputDir, filename);
-	// ignore_security_alert
-	transform(fs.readFileSync(input).toString(), {
-		presets: ['@babel/preset-env']
-	}, (err, result) => {
-		if (!err) {
-			fs.writeFile(output, '#!/usr/bin/env node\n\n' + result.code, () => {
-				fs.chmod(output, 0o774)
-			});
-		}
-	});
+webpack({
+	mode: 'development',
+	entry: {
+		index: './src/index.js',
+		install: './src/install.js',
+		watch: './src/watch.js'
+	},
+	output: {
+		filename: '[name].js',
+		path: path.resolve(__dirname, 'dist'),
+	},
+	module: {
+		rules: [
+			{
+				test: /\.js/,
+				use: [
+					{
+						loader: 'babel-loader',
+						options: {
+							presets: ['@babel/preset-env']
+						}
+					}
+				]
+			}
+		]
+	},
+	plugins: [new ShebangPlugin()]
+}, (e) => {
+	console.dir(e, {depth: 1})
 });
