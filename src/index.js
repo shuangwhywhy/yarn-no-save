@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import { homedir } from 'os';
+import path from 'path';
 import { reset, makeJs, exec } from './make.js';
 
 const home = homedir();
