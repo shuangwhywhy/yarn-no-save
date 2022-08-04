@@ -9,10 +9,14 @@ import { ifStatement, callExpression, memberExpression, stringLiteral, identifie
 
 const { uid, gid } = userInfo();
 const cwd = process.cwd();
-const whereIsYarn = exec('readlink', '-f', '`which yarn`');
+
+export const isDebug = process.env.YNS_LOG_LEVEL === 'debug';
+export const whereIsYarn = exec('readlink', '-f', '`which yarn`');
+export const yarnCliFile = path.resolve(whereIsYarn, '../../lib/cli.js');
 
 export function exec (cmd, ...args) {
 	const PATH = process.env?.PATH?.split(':')?.filter(p => !/^\/var\/folders\//.test(p))?.join(':');
+	isDebug && console.log(JSON.stringify({ cmd, args, cwd, uid, gid, env: process.env }, undefined, '  '));
 	const { stdout, stderr } = spawnSync(cmd, args, {	// ignore_security_alert
 		cwd, uid, gid, shell: process.env.SHELL, env: {
 			...process.env,
@@ -68,8 +72,7 @@ export function reset() {
 }
 
 export function makeJs() {
-	const file = path.resolve(whereIsYarn, '../../lib/cli.js');
-	const ast = parse(fs.readFileSync(file).toString());
+	const ast = parse(fs.readFileSync(yarnCliFile).toString());
 	traverse(ast, {
 		enter(p) {
 			if (_isSavingManifest(p)) {
@@ -158,5 +161,5 @@ export function makeJs() {
 	const code = generate(ast, {
 		quotes: 'single',
 	}).code;
-	fs.writeFileSync(file, code);
+	fs.writeFileSync(yarnCliFile, code);
 }

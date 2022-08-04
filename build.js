@@ -34,7 +34,10 @@ webpack({
 		]
 	},
 	plugins: [new ShebangPlugin()],
-	
+	optimization: {
+		sideEffects: false,
+		usedExports: true
+	}
 }, (e) => {
 	e && console.log(e.toString());
 });
