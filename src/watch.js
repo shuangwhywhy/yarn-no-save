@@ -2,12 +2,7 @@
 
 import fs from 'fs';
 import Single from 'single-instance';
-import { makeJs, exec, whereIsYarn, yarnCliFile, isDebug } from './make.js';
-
-function detect() {
-	const result = exec('grep', '-e', '"--no-save"', yarnCliFile);
-	return !!result.trim();
-}
+import { makeJs, detect, whereIsYarn, yarnCliFile, isDebug } from './make.js';
 
 new Single('yarn-cli-watcher')
 .lock()

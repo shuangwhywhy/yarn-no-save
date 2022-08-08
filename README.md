@@ -36,7 +36,7 @@ In advance, we offered you someway to control the service. Here are the advanced
 	```bash
 	$ yns reset
 	```
-	This will reinstall Yarn from your current registry. If you want `--no-save` option to come back, you should run the following commands:
+	This will reinstall Yarn from your current registry. If you want `--no-save` / `-N` option back, you should run the following commands:
 	```bash
 	$ yns
 	$ yns start
@@ -52,10 +52,26 @@ In advance, we offered you someway to control the service. Here are the advanced
 	$ yns stop
 	```
 
-4. Restart watching service:
+4. Reload watching service:
+   > This doesn't unload watching configs, just reloads the service (quick reload).
+	```bash
+	$ yns reload
+	```
+
+5. Restart watching service:
+   > This unloads watching configs and starts from the beginning (full restart).
 	```bash
 	$ yns restart
 	```
+
+6. Check if `--no-save` / `-N` option is available:
+   ```bash
+   $ yns check
+   ```
+   or
+   ```bash
+   $ yns validate
+   ```
 
 # To Mention
 
