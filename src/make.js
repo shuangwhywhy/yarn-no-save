@@ -67,6 +67,11 @@ function _isRemoveThrowError(nodePath) {
 		nodePath.get('argument').get('arguments')[0].get('arguments')[0]?.isStringLiteral({ value: 'moduleNotInManifest' });
 }
 
+export function detect() {
+	const result = exec('grep', '-e', '"--no-save"', yarnCliFile);
+	return !!result.trim();
+}
+
 export function reset() {
 	exec('npm', 'i', '-g', 'yarn');
 }
